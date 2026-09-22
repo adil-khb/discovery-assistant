@@ -1,0 +1,13 @@
+{
+  "name": "adil-portfolio-and-discovery", "private": true, "type": "module",
+  "scripts": {
+    "dev:discovery": "vite discovery --host 127.0.0.1 --port 5173",
+    "dev:portfolio": "vite portfolio --host 127.0.0.1 --port 5174",
+    "build:discovery": "vite build discovery --base=./ --outDir ../dist/discovery --emptyOutDir",
+    "build:portfolio": "vite build portfolio --base=./ --outDir ../dist/portfolio --emptyOutDir",
+    "build": "npm run build:discovery && npm run build:portfolio",
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {"react": "^19.1.0", "react-dom": "^19.1.0", "docx": "^9.5.0", "lucide-react": "^0.468.0"},
+  "devDependencies": {"vite": "^6.3.0"}
+}
