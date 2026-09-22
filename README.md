@@ -1,39 +1,36 @@
-# Discovery Assistant + Adil's portfolio
+# Discovery Assistant
 
-Two independent static React sites, built from the supplied `codex-prompts.md` brief.
+A fully client-side HCM discovery questionnaire and Business Requirements Document generator.
 
-## Local development
+Live app: https://adil-khb.github.io/discovery-assistant/
+
+## Development
 
 Requires Node.js 20.19+ or 22.12+.
 
 ```sh
 npm ci
 npm run dev:discovery
-npm run dev:portfolio
 npm test
 npm run build
 ```
 
-The development URLs are http://127.0.0.1:5173 and http://127.0.0.1:5174. Build outputs are `dist/discovery` and `dist/portfolio`; relative asset paths support GitHub Pages project URLs.
+The preview runs at http://127.0.0.1:5173. The production build is written to `dist/discovery`. Copy that directory’s contents into `docs` and commit to publish through GitHub Pages (`main` → `/docs`).
 
-## Discovery Assistant
+## Architecture
 
-All 39 seed questions are preserved verbatim. A fictional 420-person company provides 36 sample answers and three outstanding items. Users can create a session, edit responses, mark items not applicable, add custom questions, and export Markdown, plain text, or Word documents. Checklist notes without a decision remain outstanding and their notes are retained in the document.
+- `discovery/src/questions.js`: all 39 original seed questions and stable identifiers.
+- `discovery/src/model.js`: fictional sample session, answer status, local storage validation, and custom questions.
+- `discovery/src/brd.js`: isolated template generator, Markdown/plain-text formatting, and real Word export through the bundled `docx` library.
+- `discovery/src/main.jsx`: live capture, category navigation, progress, accessible dialogs, and exports.
+- `shared/base.css`: common typography and near-black/teal design tokens.
 
-`discovery/src/model.js` handles progress and storage validation. `discovery/src/brd.js` contains the isolated, deterministic document generator and export adapters. No backend, login, AI service, analytics, or external answer transmission is used. Fonts are requested from Google Fonts; all application dependencies are bundled locally. Browser storage is scoped to the site origin and browser profile. Starting a new session replaces the current session after an explicit warning; export first if it must be retained.
+A sample session contains 36 answers and three outstanding items. Negative checklist responses count as answered; notes without a decision remain outstanding. Not-applicable items are recorded separately. User answers never leave the browser. Browser storage is shared by users of the same profile; starting another session replaces it after a warning. Fonts load from Google Fonts; application dependencies are bundled locally.
 
-For a future LLM integration, replace the isolated generator contract with a provider behind a secure server-side proxy. Never put an API secret in a static website. GitHub Pages cannot itself host that proxy.
+The generator is intentionally rule-based and isolated for a future provider integration. An LLM would need a secure server-side proxy outside GitHub Pages. Never embed secret API keys in this static app.
 
-## Portfolio
-
-Existing project content was recovered from the public portfolio's `assets/js/project-data.js`. All 28 titles, descriptions, and destination links are preserved. Automation case studies avoid unverified metrics. The featured image is a screenshot of the actual Discovery Assistant.
-
-## GitHub Pages
-
-Each site is deployed independently: `adil-khb/discovery-assistant` and `adil-khb/-portfolio`. Each repository serves its built site from `main` → `/docs`. The source and lockfile are included for maintainability. Build the relevant target and copy its output into that repository's `docs` directory, then commit. GitHub Pages publishes the resulting update.
-
-The portfolio's Discovery Assistant URL is set in `portfolio/src/main.jsx`. Set `VITE_DISCOVERY_URL` at build time to override it for another deployment.
+The questionnaire draws inspiration from a published HCM selection framework, adapted to an interactive discovery workflow. The company and all sample answers are fictional.
 
 ## Validation
 
-`npm test` covers sample completeness, outstanding items, negative checklist answers, not-applicable handling, custom questions, pending notes, storage corruption, and real DOCX generation. Browser verification covers interactive capture and reload persistence, document preview, downloads, and responsive layouts.
+Five automated tests cover progress and outstanding items, Yes/No/Partial semantics, not-applicable answers, custom questions, notes retention, saved-session recovery, and DOCX generation. Browser checks cover editing, refresh persistence, custom questions, clipboard copy, document preview, Word download, and mobile overflow.
